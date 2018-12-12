@@ -1,1 +1,17 @@
-#IBM FinishLine Challange Toronto 2018 Winning MVC 
+# IBM FinishLine Challange Toronto 2018 Winning Hackathron App - TravelBot
+# This bot app was built by a team of 5 people, with each individual doing different things
+# I was tasked with doing the API research and implementation for the bot.
+# Using the WAS service we are able to create a Slack bot which is able to converse with users,
+# in order to plan their travel. Includes travel, accommodation, 
+# and activities for your trip based on information given by the user during the conversation.
+# After the conversation is completed an itinerary is auto generated wit h all of the relevant information to 
+# the users travel plans. The application is very accessible and easy to use due to the integration of 
+# the solution into the Slack application. IBM Watson is able to grab all of the trip details for the user 
+# so he/she  doesn’t have to search around every website for different parts of his trip
+# The use of the WAS service allows us to create a human like interface for seamless travel 
+# itinerary creation through a simple conversation.
+# Using the TripAdvisor API and the Amadeus API, we were able to implement this successfully 
+# And make a presentation to the IBM judges and Won the Hackathron Challenge at the IBMFinishLine Toronto 2018
+
+
+
