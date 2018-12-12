@@ -1,0 +1,166 @@
+var slackbot = require('slackbots');
+var request = require('request');
+var airports = require('airport-codes');
+var airlines = require('airline-codes')
+
+var bot = new slackbot({
+    token:'xoxb-483766272721-483644761424-sxQuUHhOYkeEWEXblq8lNvaB',
+    name:'travelbot'
+});
+
+// Error handler
+bot.on('error', (err) => console.log(err));
+
+// Message handler
+bot.on('message', (data) =>{
+    if(data.type != 'message'){
+        return;
+    }
+    if(data.text.split('>')[1] == '' || data.text.split('>')[1] == ' '){
+        bot.postMessageToChannel('test', 
+    'Hi my name is travel bot\nI have a few rules\nplease input your needs like this so I can assist you better\ne.g. budget:<insert budget>, from:<insert IATA airport code>'
+    );
+    }
+        handleMessage(data.text);
+    
+});
+
+function handleMessage(message){
+    var from = "";
+    var to = "";
+    var depDate = "";
+    var duration = "";
+    var budget = "";
+    var people = "";
+    var arr;
+
+
+
+    if(message.includes('from:') && message.includes("to:") && message.includes("departureDate:")&& message.includes("duration:") && message.includes("budget:") ){
+        arr = message.split('from:')[1];
+        if(arr.split(' ')[0]){
+            from = arr.split(' ')[0];
+        }
+        else{
+            from = arr;
+        }
+
+        arr = message.split('to:')[1];
+        if(arr.split(' ')[0]){
+            to = arr.split(' ')[0];
+        }
+        else{
+            to = arr;
+        }
+
+        arr = message.split('departureDate:')[1];
+        if(arr.split(' ')[0]){
+            depDate = arr.split(' ')[0];
+        }
+        else{
+            depDate = arr;
+        }
+
+        arr = message.split('budget:')[1];
+        if(arr.split(' ')[0]){
+            budget = arr.split(' ')[0];
+        }
+        else{
+            budget = arr;
+        }
+
+        arr = message.split('duration:')[1];
+        if(arr.split(' ')[0]){
+            duration = arr.split(' ')[0];
+        }
+        else{
+            duration = arr;
+        }
+
+        bot.postMessageToChannel('test', "Let me get that information for you");
+        request('https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search?origin='+from+'&destination='+to+'&departure_date='+depDate+'&duration='+duration+'&max_price='+budget+'&apikey=OYFsbN9bWxHaIUNp1WUUgvpPoXlzlyJ9', function (error, response, body) {
+            if(error){
+                bot.postMessageToChannel('test', "I'm sorry I didn't quite get that\nCan you inout your information again following the guidelines\nYou can do so typing @travelbot");
+            }
+            else{
+                var json = JSON.parse(body);
+                if(json["status"]){
+                    if(json["message"]){
+                        bot.postMessageToChannel('test', json["message"]);
+                    }
+                    if(json["more_info"]){
+                        bot.postMessageToChannel('test', json["more_info"]);
+                    }
+                    
+                }
+                else{
+                    var botMessage = "";
+                    var value = json["currency"];
+                    for(var i = 0; i < json["results"].length;i++){
+                        botMessage += "From: "+from+"\n";
+                        botMessage += "To: "+json["results"][i]["destination"]+"\n";
+                        botMessage += "Departure Date: "+ json["results"][i]["departure_date"]+"\n";
+                        botMessage += "Return Date: " + json["results"][i]["return_date"]+"\n";
+                        botMessage += "Price: "+ json["results"][i]["price"]+""+value+"\n";
+                        botMessage += "Airline: " + json["results"][i]["airline"];
+                    }
+                    bot.postMessageToChannel('test', botMessage);
+                    }
+            }
+        });
+    }
+    else if(message.includes('from:') && message.includes('budget:')){
+        
+        arr = message.split('from:')[1];
+        if(arr.split(' ')[0]){
+            from = arr.split(' ')[0];
+        }
+        else{
+            from = arr;
+        }
+
+        arr = message.split('budget:')[1];
+        if(arr.split(' ')[0]){
+            budget = arr.split(' ')[0];
+        }
+        else{
+            budget = arr;
+        }
+
+        bot.postMessageToChannel('test', "Let me get that information for you");
+        request('https://api.sandbox.amadeus.com/v1.2/flights/inspiration-search?origin='+from+'&max_price='+budget+'&apikey=OYFsbN9bWxHaIUNp1WUUgvpPoXlzlyJ9', function (error, response, body) {
+            if(error){
+                bot.postMessageToChannel('test', "I'm sorry I didn't quite get that\nCan you inout your information again following the guidelines\nYou can do so typing @travelbot");
+            }
+            else{
+                var json = JSON.parse(body);
+                if(json["status"]){
+                    if(json["message"]){
+                        bot.postMessageToChannel('test', json["message"]);
+                    }
+                    if(json["more_info"]){
+                        bot.postMessageToChannel('test', json["more_info"]);
+                    }
+                    
+                }
+                else{
+                    var botMessage = "";
+                    var value = json["currency"];
+                    for(var i = 0; i < json["results"].length;i++){
+                        botMessage += "From: "+from+"\n";
+                        botMessage += "To: "+json["results"][i]["destination"]+"\n";
+                        botMessage += "Departure Date: "+ json["results"][i]["departure_date"]+"\n";
+                        botMessage += "Return Date: " + json["results"][i]["return_date"]+"\n";
+                        botMessage += "Price: "+ json["results"][i]["price"]+""+value+"\n";
+                        botMessage += "Airline: " + json["results"][i]["airline"];
+                        if(json["results"].length > 1){
+                            botMessage += "\n\n\n\n\n"
+                        }
+                    }
+                    bot.postMessageToChannel('test', botMessage);
+                    }
+            }
+            
+        });
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "travelbot",
+  "version": "1.0.0",
+  "description": "slackbot that tells travel information",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Abdulkadir Balogun",
+  "license": "MIT",
+  "dependencies": {
+    "airline-codes": "^1.0.2",
+    "airport-codes": "^1.0.2",
+    "axios": "^0.18.0",
+    "iata": "0.0.0",
+    "request": "^2.88.0",
+    "slackbots": "^1.2.0"
+  }
+}
